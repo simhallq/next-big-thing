@@ -3,7 +3,8 @@ import TodoList from '../components/TodoList'
 import { supabase } from '../lib/initSupabase'
 
 
-export default function IndexPage() {
+
+export default function Home() {
   const { user } = Auth.useUser()
 
   return (

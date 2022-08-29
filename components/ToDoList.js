@@ -4,36 +4,39 @@ import { supabase } from '../lib/initSupabase'
 
 
 
-export default function Todos({ user }) {
-  const [todos, setTodos] = useState([])
+export default function Posts({ user }) {
+  const [posts, setPosts] = useState([])
   const [newTaskText, setNewTaskText] = useState('')
   const [errorText, setError] = useState('')
 
   useEffect(() => {
-    fetchTodos()
+    debugger
+    fetchPosts()
   }, [])
 
-  const fetchTodos = async () => {
-    let { data: todos, error } = await supabase.from('posts').select('*').order('id', true)
+  const fetchPosts = async () => {
+    let { data: posts, error } = await supabase.from('posts').select('*').order('id', true)
     if (error) console.log('error', error)
-    else setTodos(todos)
+    else setPosts(posts)
+    debugger
   }
-  const addTodo = async (postText) => {
+  const addPost = async (postText) => {
     let post = postText.trim()
     if (post.length) {
-      let { data: todo, error } = await supabase
+      let { data: post, error } = await supabase
         .from('posts')
         .insert({ content: post, poster_id: user.id })
         .single()
       if (error) setError(error.message)
-      else setTodos([...todos, todo])
+      else setPosts([...posts, post])
     }
+    debugger
   }
 
-  const deleteTodo = async (id) => {
+  const deletePost = async (id) => {
     try {
-      await supabase.from('todos').delete().eq('id', id)
-      setTodos(todos.filter((x) => x.id != id))
+      await supabase.from('posts').delete().eq('id', id)
+      setPosts(posts.filter((x) => x.id != id))
     } catch (error) {
       console.log('error', error)
     }
@@ -41,7 +44,7 @@ export default function Todos({ user }) {
 
   return (
     <div className="w-full">
-      <h1 className="mb-12">Todo List.</h1>
+      <h1 className="mb-12">Post List.</h1>
       <div className="flex gap-2 my-2">
         <input
           className="rounded w-full p-2"
@@ -53,15 +56,15 @@ export default function Todos({ user }) {
             setNewTaskText(e.target.value)
           }}
         />
-        <button className="btn-black" onClick={() => addTodo(newTaskText)}>
+        <button className="btn-black" onClick={() => addPost(newTaskText)}>
           Add
         </button>
       </div>
       {!!errorText && <Alert text={errorText} />}
       <div className="bg-white shadow overflow-hidden rounded-md">
         <ul>
-          {todos.map((todo) => (
-            <Todo key={todo.id} todo={todo} onDelete={() => deleteTodo(todo.id)} />
+          {posts.map((post) => (
+            <Post key={post.id} post={post} onDelete={() => deletePost(post.id)} />
           ))}
         </ul>
       </div>
@@ -69,15 +72,15 @@ export default function Todos({ user }) {
   )
 }
 
-const Todo = ({ todo, onDelete }) => {
-  const [isCompleted, setIsCompleted] = useState(todo.is_complete)
+const Post = ({ post, onDelete }) => {
+  const [isCompleted, setIsCompleted] = useState(post.is_complete)
 
   const toggle = async () => {
     try {
       const { data, error } = await supabase
-        .from('todos')
+        .from('posts')
         .update({ is_complete: !isCompleted })
-        .eq('id', todo.id)
+        .eq('id', post.id)
         .single()
       if (error) {
         throw new Error(error)
@@ -98,7 +101,7 @@ const Todo = ({ todo, onDelete }) => {
     >
       <div className="flex items-center px-4 py-4 sm:px-6">
         <div className="min-w-0 flex-1 flex items-center">
-          <div className="text-sm leading-5 font-medium truncate">{todo.task}</div>
+          <div className="text-sm leading-5 font-medium truncate">{post.content}</div>
         </div>
         <div>
           <input
