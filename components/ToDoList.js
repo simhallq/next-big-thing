@@ -49,7 +49,7 @@ export default function Posts({ user }) {
         <input
           className="rounded w-full p-2"
           type="text"
-          placeholder="make coffee"
+          placeholder="What on your mind?"
           value={newTaskText}
           onChange={(e) => {
             setError('')
