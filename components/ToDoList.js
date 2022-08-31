@@ -10,7 +10,6 @@ export default function Posts({ user }) {
   const [errorText, setError] = useState('')
 
   useEffect(() => {
-    debugger
     fetchPosts()
   }, [])
 
@@ -18,7 +17,6 @@ export default function Posts({ user }) {
     let { data: posts, error } = await supabase.from('posts').select('*').order('id', true)
     if (error) console.log('error', error)
     else setPosts(posts)
-    debugger
   }
   const addPost = async (postText) => {
     let post = postText.trim()
@@ -30,9 +28,8 @@ export default function Posts({ user }) {
       if (error) setError(error.message)
       else setPosts([...posts, post])
     }
-    debugger
   }
-
+  debugger
   const deletePost = async (id) => {
     try {
       await supabase.from('posts').delete().eq('id', id)
@@ -49,7 +46,7 @@ export default function Posts({ user }) {
         <input
           className="rounded w-full p-2"
           type="text"
-          placeholder="What on your mind?"
+          placeholder="What's on your mind?"
           value={newTaskText}
           onChange={(e) => {
             setError('')
@@ -63,55 +60,30 @@ export default function Posts({ user }) {
       {!!errorText && <Alert text={errorText} />}
       <div className="bg-white shadow overflow-hidden rounded-md">
         <ul>
-          {posts.map((post) => (
-            <Post key={post.id} post={post} onDelete={() => deletePost(post.id)} />
-          ))}
+          {posts.map((post) => (user.id==post.id) ?
+            <Post key={post.id} post={post} isDeleteable={true} onDelete={() => deletePost(post.id)} />:
+            <Post key={post.id} post={post} isDeleteable={false} onDelete={() => deletePost(post.id)} />
+          )}
         </ul>
       </div>
     </div>
   )
 }
 
-const Post = ({ post, onDelete }) => {
-  const [isCompleted, setIsCompleted] = useState(post.is_complete)
+const Post = ({ post,isDeleteable, onDelete }) => {
+  debugger
 
-  const toggle = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('posts')
-        .update({ is_complete: !isCompleted })
-        .eq('id', post.id)
-        .single()
-      if (error) {
-        throw new Error(error)
-      }
-      setIsCompleted(data.is_complete)
-    } catch (error) {
-      console.log('error', error)
-    }
-  }
 
   return (
     <li
-      onClick={(e) => {
-        e.preventDefault()
-        toggle()
-      }}
       className="w-full block cursor-pointer hover:bg-gray-200 focus:outline-none focus:bg-gray-200 transition duration-150 ease-in-out"
     >
       <div className="flex items-center px-4 py-4 sm:px-6">
         <div className="min-w-0 flex-1 flex items-center">
           <div className="text-sm leading-5 font-medium truncate">{post.content}</div>
         </div>
-        <div>
-          <input
-            className="cursor-pointer"
-            onChange={(e) => toggle()}
-            type="checkbox"
-            checked={isCompleted ? true : ''}
-          />
-        </div>
         <button
+          disabled={!isDeleteable}
           onClick={(e) => {
             e.preventDefault()
             e.stopPropagation()
