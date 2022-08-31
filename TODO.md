@@ -1,5 +1,6 @@
 - [ ] bara kunna ta bort egna poster
-- [ ] hämta poster från alla användare
+- [x] hämta poster från alla användare
+- [x] tailwind styling
 - [ ] visa användare för varje post
 - [ ] lägga till användarnamn attribut till varje post
 - [ ] splitta vy i skapa post och läsa poster
