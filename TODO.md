@@ -5,3 +5,4 @@
 - [ ] lägga till användarnamn attribut till varje post
 - [ ] splitta vy i skapa post och läsa poster
 - [ ] ta bort alla todo-app rester
+- [ ] fixa hydration error
